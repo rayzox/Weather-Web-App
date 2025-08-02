@@ -10,7 +10,8 @@
                     No results match your query, try a different term.
                 </p>
                 <template v-else>
-                    <li v-for="searchResult in mapboxSearchResult" :key="searchResult.id" class="py-2 cursor-pointer">
+                    <li v-for="searchResult in mapboxSearchResult" :key="searchResult.id" class="py-2 cursor-pointer"
+                        @click="previewCity(searchResult)">
                         {{ searchResult.place_name }}
                     </li>
                 </template>
@@ -22,6 +23,23 @@
 <script setup>
 import axios from 'axios';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+
+const router = useRouter();
+const previewCity = (searchResult) => {
+    console.log(searchResult);
+    const [city, state] = searchResult.place_name.split(",");
+    router.push({
+        name: "cityView",
+        params: { state: state.replaceAll(" ",""), city: city },
+        query: {
+            lat: searchResult.geometry.coordinates[1],
+            lng: searchResult.geometry.coordinates[0],
+            preview: true,
+        }
+    });
+};
 
 const mapboxPublicKey = "pk.eyJ1IjoicjR5ejB4IiwiYSI6ImNtZHQyeTYzNjB5dmIyd3F2bWx2dXZ3MmYifQ.U57YAz_DlkU0oyO5Yq-heg";
 const searchQuery = ref("");
